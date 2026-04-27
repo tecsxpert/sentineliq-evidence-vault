@@ -20,6 +20,7 @@ function Register({ setPage }) {
       console.error(error);
       alert("Error registering");
     }
+console.log("Sending:", { username, password });
   };
 
   return (

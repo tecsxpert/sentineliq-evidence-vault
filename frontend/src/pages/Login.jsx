@@ -24,6 +24,7 @@ function Login({ setPage }) {
       console.error(error);
       alert("Invalid credentials");
     }
+console.log("Sending:", { username, password });
   };
 
   return (

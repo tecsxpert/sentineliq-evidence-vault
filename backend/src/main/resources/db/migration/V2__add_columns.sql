@@ -1,0 +1,12 @@
+ALTER TABLE evidence ADD COLUMN type VARCHAR(255);
+ALTER TABLE evidence ADD COLUMN priority VARCHAR(255);
+ALTER TABLE evidence ADD COLUMN case_number VARCHAR(255);
+ALTER TABLE evidence ADD COLUMN case_name VARCHAR(255);
+ALTER TABLE evidence ADD COLUMN department VARCHAR(255);
+ALTER TABLE evidence ADD COLUMN assigned_to VARCHAR(255);
+ALTER TABLE evidence ADD COLUMN date_collected DATE;
+ALTER TABLE evidence ADD COLUMN deadline DATE;
+ALTER TABLE evidence ADD COLUMN location VARCHAR(255);
+ALTER TABLE evidence ADD COLUMN source VARCHAR(255);
+ALTER TABLE evidence ADD COLUMN description TEXT;
+ALTER TABLE evidence ADD COLUMN tags VARCHAR(255);
