@@ -48,5 +48,30 @@ def describe_evidence():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@app.route('/recommend', methods=['POST'])
+@limiter.limit("30 per minute")
+def recommend_actions():
+    data = request.json
+    if not data or 'input_data' not in data:
+        return jsonify({"error": "Missing input_data"}), 400
+
+    try:
+        with open("prompts/recommend_template.txt", "r") as f:
+            template = f.read()
+        
+        prompt = template.replace("{input_data}", data['input_data'])
+
+        completion = client.chat.completions.create(
+            model=os.getenv("GROQ_MODEL"),
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7, # Higher temperature for creative recommendations [cite: 94]
+            response_format={"type": "json_object"}
+        )
+
+        return completion.choices[0].message.content, 200, {'Content-Type': 'application/json'}
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 if __name__ == '__main__':
     app.run(port=5000)
