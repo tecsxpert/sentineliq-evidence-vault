@@ -50,6 +50,15 @@ console.log("Sending:", { username, password });
         <button className="bg-green-500 hover:bg-green-600 text-white w-full p-2 rounded">
           Register
         </button>
+        <p className="text-sm text-center mt-4">
+          Already have an account?{" "}
+          <span
+            onClick={() => setPage("login")}
+            className="text-indigo-500 cursor-pointer hover:underline"
+          >
+            Login
+          </span>
+        </p>
       </form>
     </div>
   );
