@@ -1,16 +1,22 @@
 package com.internship.tool.service;
 
 import com.internship.tool.entity.Evidence;
+import com.internship.tool.entity.User;
 import com.internship.tool.repository.EvidenceRepository;
+import com.internship.tool.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
-
+import org.springframework.security.core.context.SecurityContextHolder;
 @Service
 public class EvidenceService {
 
     private final EvidenceRepository repository;
+    @Autowired
+    private  UserRepository userRepository;
+
+
 
     public EvidenceService(EvidenceRepository repository) {
         this.repository = repository;
@@ -18,20 +24,27 @@ public class EvidenceService {
 
     // GET ALL
     public Page<Evidence> getAllEvidence(Pageable pageable) {
-        return repository.findAll(pageable);
+        String username = getCurrentUsername();
+        return repository.findByUserUsername(username, pageable);
     }
-
     public Page<Evidence> searchEvidence(String keyword, Pageable pageable) {
+        String username = getCurrentUsername();
+
         return repository
-                .findByNameContainingIgnoreCaseOrTypeContainingIgnoreCaseOrStatusContainingIgnoreCase(
-                        keyword, keyword, keyword, pageable
-                );
+                .findByUserUsernameAndNameContainingIgnoreCase(username, keyword, pageable);
     }
     // CREATE
     public Evidence createEvidence(Evidence evidence) {
+        String username = getCurrentUsername();
+
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        evidence.setUser(user);
+
         return repository.save(evidence);
     }
-
     // UPDATE
     public Evidence updateEvidence(Long id, Evidence newData) {
         return repository.findById(id).map(evidence -> {
@@ -66,4 +79,11 @@ public class EvidenceService {
     public long getByStatus(String status) {
         return repository.countByStatusIgnoreCase(status);
     }
+    public String getCurrentUsername() {
+        return SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+    }
+
+
 }
