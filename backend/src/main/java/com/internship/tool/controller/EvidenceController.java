@@ -21,10 +21,10 @@ public class EvidenceController {
     public EvidenceController(EvidenceService service) {
         this.service = service;
     }
-    @GetMapping("/search")
+   /* @GetMapping("/search")
     public Page<Evidence> searchEvidence(@RequestParam String q, Pageable pageable) {
-        return service.searchEvidence(q, pageable);
-    }
+        return service.search(q, pageable,);
+    }*/
 
     @GetMapping("/all")
     public Page<Evidence> getAllEvidence(Pageable pageable) {
@@ -32,10 +32,9 @@ public class EvidenceController {
     }
 
     @PostMapping("/create")
-    public Evidence createEvidence(@Valid @RequestBody Evidence evidence) {
+    public Evidence create(@RequestBody Evidence evidence) {
         return service.createEvidence(evidence);
     }
-
     @PutMapping("/{id}")
     public Evidence updateEvidence(@PathVariable Long id, @Valid @RequestBody Evidence evidence) {
         return service.updateEvidence(id, evidence);

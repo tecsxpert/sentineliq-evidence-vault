@@ -21,6 +21,9 @@ public class Evidence {
 
     @NotBlank(message = "Status is required")
     private String status;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     // 🔹 New fields
     private String type;
