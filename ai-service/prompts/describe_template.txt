@@ -1,0 +1,3 @@
+Analyze the following evidence: {input_data}
+Provide a professional description and a severity score (1-10).
+Return the result as a JSON object with the keys: "description", "severity_score", and "generated_at".

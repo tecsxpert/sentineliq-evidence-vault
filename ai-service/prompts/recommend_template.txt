@@ -1,0 +1,7 @@
+As an expert digital forensics analyst, suggest 3 investigation steps for this evidence:
+Evidence: {input_data}
+
+Return ONLY a JSON array of 3 objects. Each object must have:
+- "action_type": (e.g., Technical, Legal, Physical)
+- "description": (the specific step to take)
+- "priority": (High, Medium, or Low)
