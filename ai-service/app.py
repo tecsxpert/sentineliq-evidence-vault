@@ -11,6 +11,34 @@ load_dotenv()
 
 app = Flask(__name__)
 
+# ... existing imports ...
+app = Flask(__name__)
+start_time = datetime.datetime.now()
+
+# --- DAY 8: SECURITY HEADERS ---
+@app.after_request
+def add_security_headers(response):
+    """
+    Day 8: Mitigates OWASP ZAP findings by enforcing secure browser behaviors.
+    """
+    # Prevents browsers from guessing the MIME type
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    # Prevents Clickjacking by forbidding the API from being embedded in iframes
+    response.headers['X-Frame-Options'] = 'DENY'
+    # Enforces HTTPS connections (even though we are local now, good for prod)
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    # Restricts where resources can be loaded from
+    response.headers['Content-Security-Policy'] = "default-src 'self'"
+    # Legacy XSS protection filter
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    
+    # Ensure no caching of sensitive API data by the browser
+    if 'Cache-Control' not in response.headers:
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        
+    return response
+
+
 # Day 3 Requirement: Rate Limiting - blocks IPs exceeding 30 req/min 
 limiter = Limiter(
     get_remote_address,
