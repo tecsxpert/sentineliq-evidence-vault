@@ -6,13 +6,17 @@ import com.internship.tool.entity.Evidence;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EvidenceRepository extends JpaRepository<Evidence, Long> {
-    Page<Evidence> findAll(Pageable pageable);
 
-    Page<Evidence> findByNameContainingIgnoreCaseOrTypeContainingIgnoreCaseOrStatusContainingIgnoreCase(
+    Page<Evidence> findByUserUsername(String username, Pageable pageable);
+
+    Page<Evidence> findByUserUsernameAndNameContainingIgnoreCase(
+            String username,
             String name,
-            String type,
-            String status,
             Pageable pageable
     );
-    long countByStatusIgnoreCase(String status);
+
+    // ✅ DASHBOARD FIX
+    long countByUserUsername(String username);
+
+    long countByUserUsernameAndStatusIgnoreCase(String username, String status);
 }

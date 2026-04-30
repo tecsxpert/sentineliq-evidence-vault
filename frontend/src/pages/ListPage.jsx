@@ -10,6 +10,25 @@ function ListPage({ setPage: setAppPage, setSelectedItem }) {
   // 🔥 pagination states
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const downloadCSV = async () => {
+    try {
+      const res = await API.get("/export", {
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.setAttribute("download", "evidence.csv");
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("CSV download failed", error);
+    }
+  };
 
   // 🔥 fetch data with pagination + search
   useEffect(() => {
@@ -160,6 +179,12 @@ function ListPage({ setPage: setAppPage, setSelectedItem }) {
           className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
         >
           Next
+        </button>
+        <button
+          onClick={downloadCSV}
+          className="mb-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Export CSV
         </button>
       </div>
     </div>
