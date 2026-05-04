@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+<body style="font-family: Arial, sans-serif; color: #111827;">
+<h2>Evidence deadline reminder</h2>
+<p>The following evidence item is due soon:</p>
+<table cellpadding="6" cellspacing="0" style="border-collapse: collapse;">
+    <tr><td><strong>Name</strong></td><td th:text="${evidence.name}"></td></tr>
+    <tr><td><strong>Status</strong></td><td th:text="${evidence.status}"></td></tr>
+    <tr><td><strong>Priority</strong></td><td th:text="${evidence.priority}"></td></tr>
+    <tr><td><strong>Deadline</strong></td><td th:text="${evidence.deadline}"></td></tr>
+    <tr><td><strong>Case</strong></td><td th:text="${evidence.caseNumber}"></td></tr>
+</table>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import API from "../services/api";
 
 function CreatePage({ selectedItem, refreshList, goToList }) {
@@ -18,10 +18,15 @@ function CreatePage({ selectedItem, refreshList, goToList }) {
     description: "",
     tags: "",
   });
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     if (selectedItem) {
-      setFormData(selectedItem);
+      setFormData({
+        ...selectedItem,
+        dateCollected: selectedItem.dateCollected || "",
+        deadline: selectedItem.deadline || "",
+      });
     }
   }, [selectedItem]);
 
@@ -39,6 +44,18 @@ function CreatePage({ selectedItem, refreshList, goToList }) {
       if (selectedItem) {
         await API.put(`/${selectedItem.id}`, formData);
         alert("Updated successfully!");
+      } else if (file) {
+        const uploadData = new FormData();
+        uploadData.append("file", file);
+        Object.entries(formData).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && String(value).trim() !== "") {
+            uploadData.append(key, value);
+          }
+        });
+        await API.post("/upload", uploadData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        alert("Created successfully!");
       } else {
         await API.post("/create", formData);
         alert("Created successfully!");
@@ -48,134 +65,118 @@ function CreatePage({ selectedItem, refreshList, goToList }) {
       goToList();
     } catch (error) {
       console.error(error);
-      alert("Error saving data");
+      alert(error.response?.data?.message || "Error saving data");
     }
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-6 max-w-3xl">
-      <h1 className="text-2xl font-bold mb-4 text-gray-800">
+    <div className="max-w-3xl rounded-lg bg-white p-4 shadow-md sm:p-6">
+      <h1 className="mb-4 text-2xl font-bold text-gray-800">
         {selectedItem ? "Edit Evidence" : "Create Evidence"}
       </h1>
 
-     <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-5">
+      <form onSubmit={handleSubmit} className="grid gap-5 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <label className="mb-1 block text-sm font-medium">Evidence Name *</label>
+          <input type="text" name="name" value={formData.name || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2 focus:ring-2 focus:ring-indigo-400" />
+        </div>
 
-       {/* NAME */}
-       <div className="col-span-2">
-         <label className="block text-sm font-medium mb-1">Evidence Name *</label>
-         <input
-           type="text"
-           name="name"
-           value={formData.name}
-           onChange={handleChange}
-           className="w-full border p-2 rounded focus:ring-2 focus:ring-indigo-400"
-         />
-       </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Evidence Type *</label>
+          <select name="type" value={formData.type || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2">
+            <option value="">Select Type</option>
+            <option>Physical</option>
+            <option>Digital</option>
+            <option>Document</option>
+          </select>
+        </div>
 
-       {/* TYPE */}
-       <div>
-         <label className="block text-sm font-medium mb-1">Evidence Type *</label>
-         <select name="type" value={formData.type} onChange={handleChange} className="w-full border p-2 rounded">
-           <option value="">Select Type</option>
-           <option>Physical</option>
-           <option>Digital</option>
-           <option>Document</option>
-         </select>
-       </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Status *</label>
+          <select name="status" value={formData.status || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2">
+            <option value="">Select Status</option>
+            <option>ACTIVE</option>
+            <option>PENDING</option>
+            <option>COMPLETED</option>
+          </select>
+        </div>
 
-       {/* STATUS */}
-       <div>
-         <label className="block text-sm font-medium mb-1">Status *</label>
-         <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded">
-           <option value="">Select Status</option>
-           <option>ACTIVE</option>
-           <option>PENDING</option>
-           <option>COMPLETED</option>
-         </select>
-       </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Priority *</label>
+          <select name="priority" value={formData.priority || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2">
+            <option value="">Select Priority</option>
+            <option>HIGH</option>
+            <option>MEDIUM</option>
+            <option>LOW</option>
+          </select>
+        </div>
 
-       {/* PRIORITY */}
-       <div>
-         <label className="block text-sm font-medium mb-1">Priority *</label>
-         <select name="priority" value={formData.priority} onChange={handleChange} className="w-full border p-2 rounded">
-           <option value="">Select Priority</option>
-           <option>HIGH</option>
-           <option>MEDIUM</option>
-           <option>LOW</option>
-         </select>
-       </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Case Number</label>
+          <input type="text" name="caseNumber" value={formData.caseNumber || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2" />
+        </div>
 
-       {/* CASE NUMBER */}
-       <div>
-         <label className="block text-sm font-medium mb-1">Case Number</label>
-         <input type="text" name="caseNumber" value={formData.caseNumber} onChange={handleChange} className="w-full border p-2 rounded"/>
-       </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Case Name</label>
+          <input type="text" name="caseName" value={formData.caseName || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2" />
+        </div>
 
-       {/* CASE NAME */}
-       <div>
-         <label className="block text-sm font-medium mb-1">Case Name</label>
-         <input type="text" name="caseName" value={formData.caseName} onChange={handleChange} className="w-full border p-2 rounded"/>
-       </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Department</label>
+          <select name="department" value={formData.department || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2">
+            <option value="">Select Department</option>
+            <option>Forensics</option>
+            <option>Cyber Crime</option>
+            <option>Police</option>
+          </select>
+        </div>
 
-       {/* DEPARTMENT */}
-       <div>
-         <label className="block text-sm font-medium mb-1">Department</label>
-         <select name="department" value={formData.department} onChange={handleChange} className="w-full border p-2 rounded">
-           <option value="">Select Department</option>
-           <option>Forensics</option>
-           <option>Cyber Crime</option>
-           <option>Police</option>
-         </select>
-       </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Assigned To</label>
+          <input type="text" name="assignedTo" value={formData.assignedTo || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2" />
+        </div>
 
-       {/* ASSIGNED TO */}
-       <div>
-         <label className="block text-sm font-medium mb-1">Assigned To</label>
-         <input type="text" name="assignedTo" value={formData.assignedTo} onChange={handleChange} className="w-full border p-2 rounded"/>
-       </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Date Collected *</label>
+          <input type="date" name="dateCollected" value={formData.dateCollected || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2" />
+        </div>
 
-       {/* DATE COLLECTED */}
-       <div>
-         <label className="block text-sm font-medium mb-1">Date Collected *</label>
-         <input type="date" name="dateCollected" value={formData.dateCollected} onChange={handleChange} className="w-full border p-2 rounded"/>
-       </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Deadline</label>
+          <input type="date" name="deadline" value={formData.deadline || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2" />
+        </div>
 
-       {/* DEADLINE */}
-       <div>
-         <label className="block text-sm font-medium mb-1">Deadline</label>
-         <input type="date" name="deadline" value={formData.deadline} onChange={handleChange} className="w-full border p-2 rounded"/>
-       </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Location</label>
+          <input type="text" name="location" value={formData.location || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2" />
+        </div>
 
-       {/* LOCATION */}
-       <div>
-         <label className="block text-sm font-medium mb-1">Location</label>
-         <input type="text" name="location" value={formData.location} onChange={handleChange} className="w-full border p-2 rounded"/>
-       </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Source</label>
+          <input type="text" name="source" value={formData.source || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2" />
+        </div>
 
-       {/* SOURCE */}
-       <div>
-         <label className="block text-sm font-medium mb-1">Source</label>
-         <input type="text" name="source" value={formData.source} onChange={handleChange} className="w-full border p-2 rounded"/>
-       </div>
+        <div className="sm:col-span-2">
+          <label className="mb-1 block text-sm font-medium">Description *</label>
+          <textarea name="description" value={formData.description || ""} onChange={handleChange} className="min-h-24 w-full rounded border p-2" />
+        </div>
 
-       {/* DESCRIPTION */}
-       <div className="col-span-2">
-         <label className="block text-sm font-medium mb-1">Description *</label>
-         <textarea name="description" value={formData.description} onChange={handleChange} className="w-full border p-2 rounded"/>
-       </div>
+        {!selectedItem && (
+          <div className="sm:col-span-2">
+            <label className="mb-1 block text-sm font-medium">Evidence File</label>
+            <input type="file" accept=".pdf,.png,.jpg,.jpeg,.txt,.csv" onChange={(event) => setFile(event.target.files?.[0] || null)} className="w-full rounded border p-2" />
+          </div>
+        )}
 
-       {/* TAGS */}
-       <div className="col-span-2">
-         <label className="block text-sm font-medium mb-1">Tags</label>
-         <input type="text" name="tags" value={formData.tags} onChange={handleChange} className="w-full border p-2 rounded"/>
-       </div>
+        <div className="sm:col-span-2">
+          <label className="mb-1 block text-sm font-medium">Tags</label>
+          <input type="text" name="tags" value={formData.tags || ""} onChange={handleChange} className="min-h-11 w-full rounded border p-2" />
+        </div>
 
-       {/* BUTTON */}
-       <button className="bg-indigo-500 hover:bg-indigo-600 text-white p-2 rounded col-span-2 mt-2">
-         {selectedItem ? "Update" : "Submit"}
-       </button>
-
-     </form>
+        <button className="mt-2 min-h-11 rounded bg-indigo-500 p-2 text-white hover:bg-indigo-600 sm:col-span-2">
+          {selectedItem ? "Update" : "Submit"}
+        </button>
+      </form>
     </div>
   );
 }

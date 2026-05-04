@@ -24,7 +24,6 @@ function Login({ setPage }) {
       console.error(error);
       alert("Invalid credentials");
     }
-console.log("Sending:", { username, password });
   };
 
   return (
@@ -54,6 +53,14 @@ console.log("Sending:", { username, password });
         <button className="bg-indigo-500 hover:bg-indigo-600 text-white w-full p-2 rounded">
           Login
         </button>
+        <p className="text-sm text-center mt-3">
+          <span
+            onClick={() => setPage("forgot-password")}
+            className="text-indigo-500 cursor-pointer hover:underline"
+          >
+            Forgot Password?
+          </span>
+        </p>
         <p className="text-sm text-center mt-4">
           Don’t have an account?{" "}
           <span

@@ -3,6 +3,8 @@ import API from "../services/api";
 
 function Register({ setPage }) {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
 
   const handleRegister = async (e) => {
@@ -11,6 +13,8 @@ function Register({ setPage }) {
     try {
       await API.post("/auth/register", {
         username,
+        email,
+        phoneNumber,
         password,
       });
 
@@ -18,9 +22,8 @@ function Register({ setPage }) {
       setPage("login");
     } catch (error) {
       console.error(error);
-      alert("Error registering");
+      alert(error.response?.data?.message || "Error registering");
     }
-console.log("Sending:", { username, password });
   };
 
   return (
@@ -37,6 +40,22 @@ console.log("Sending:", { username, password });
           className="border p-2 w-full mb-3 rounded"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+        />
+
+        <input
+          type="email"
+          placeholder="Email"
+          className="border p-2 w-full mb-3 rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          type="tel"
+          placeholder="Phone Number"
+          className="border p-2 w-full mb-3 rounded"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
         />
 
         <input
