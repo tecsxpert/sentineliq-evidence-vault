@@ -8,21 +8,30 @@ from dotenv import load_dotenv
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
+# --- DAY 11: OFFLINE AI REDUNDANCY ---
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
 # Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 
-# Day 7/9: Tracking server start time for health metrics
+# Day 7: Tracking server start time
 start_time = time.time()
 
-# Day 7/9: Internal cache to meet the < 2s response target
+# Day 9: Internal cache
 ai_cache = {}
+
+# Day 11: Initialize Offline FLAN-T5 Model at Startup
+print("Loading instruction-tuned offline model (FLAN-T5)... Please wait.")
+tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-small")
+local_fallback_model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-small")
+print("Offline model ready!")
 
 # --- DAY 8: SECURITY HEADERS (Global Middleware) ---
 @app.after_request
 def add_security_headers(response):
-    """Day 8: Mitigates OWASP ZAP findings by enforcing secure browser behaviors."""
+    """Mitigates OWASP ZAP findings."""
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
@@ -42,50 +51,53 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Initialize Groq client
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-def get_fallback_data(task_type):
-    """Day 5: Provides safe JSON if the AI fails to prevent HTTP 500."""
+def get_fallback_data(task_type, input_text="No input provided"):
+    """Day 11: High-Quality dynamic fallback using local AI."""
     now = datetime.datetime.now().isoformat()
-    if task_type == "describe":
-        return {
-            "description": "Analysis is currently unavailable. Using fallback logic.",
-            "severity_score": 0,
-            "generated_at": now,
-            "is_fallback": True
-        }
-    elif task_type == "recommend":
+    
+    try:
+        if task_type == "describe":
+            local_prompt = f"Briefly explain the security risk of this evidence: {input_text}"
+            
+            inputs = tokenizer(local_prompt, return_tensors="pt")
+            outputs = local_fallback_model.generate(**inputs, max_length=50)
+            
+            clean_output = tokenizer.decode(outputs[0], skip_special_tokens=True).capitalize()
+                
+            return {
+                "description": f"[OFFLINE MODE] {clean_output}.",
+                "severity_score": 6, 
+                "generated_at": now,
+                "is_fallback": True
+            }
+    except Exception as e:
+        print(f"Local Transformer Error: {e}")
+        
+    if task_type == "recommend":
         return {
             "recommendations": [
-                {"action_type": "Manual Review", "description": "AI service offline. Review manually.", "priority": "High"}
+                {"action_type": "Quarantine", "description": "Isolate the asset. Offline AI cannot verify safety.", "priority": "High"}
             ],
             "is_fallback": True
         }
-    return {
-        "title": "Report Unavailable",
-        "summary": "AI service encountered an error.",
-        "overview": "Detailed report could not be generated.",
-        "key_items": [],
-        "recommendations": [],
-        "is_fallback": True
-    }
+    return {"is_fallback": True}
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    """Day 7/9: Health endpoint with uptime and cache stats[cite: 1]."""
+    """Day 7: Uptime and system metrics"""
     uptime = time.time() - start_time
     return jsonify({
         "status": "healthy", 
         "uptime_seconds": int(uptime),
         "cache_entries": len(ai_cache),
-        "timestamp": datetime.datetime.now().isoformat()
+        "offline_model": "loaded"
     }), 200
 
 @app.route('/describe', methods=['POST'])
 @limiter.limit("30 per minute")
 def describe_evidence():
-    """Day 9: Optimized with SHA256 Caching[cite: 1]."""
     data = request.json
     if not data or 'input_data' not in data:
         return jsonify({"error": "Missing input_data"}), 400
@@ -93,13 +105,15 @@ def describe_evidence():
     try:
         with open("prompts/describe_template.txt", "r") as f:
             template = f.read()
-        prompt = template.replace("{input_data}", data['input_data'])
         
-        # Caching logic
+        prompt = template.replace("{input_data}", data['input_data'])
         prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()
+
+        # Day 9: Cache HIT
         if prompt_hash in ai_cache:
             return ai_cache[prompt_hash], 200, {'Content-Type': 'application/json', 'X-Cache': 'HIT'}
 
+        # Cloud AI Request
         completion = client.chat.completions.create(
             model=os.getenv("GROQ_MODEL"),
             messages=[{"role": "user", "content": prompt}],
@@ -107,16 +121,18 @@ def describe_evidence():
             response_format={"type": "json_object"}
         )
 
+        # Day 9: Cache MISS
         ai_cache[prompt_hash] = completion.choices[0].message.content
         return ai_cache[prompt_hash], 200, {'Content-Type': 'application/json', 'X-Cache': 'MISS'}
+
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify(get_fallback_data("describe")), 200
+        print(f"Cloud AI Error: {e} -> Rerouting to local transformer...")
+        resp = jsonify(get_fallback_data("describe", data['input_data']))
+        return resp, 200
 
 @app.route('/recommend', methods=['POST'])
 @limiter.limit("30 per minute")
 def recommend_actions():
-    """Day 9: Optimized recommendations with 2s speed target[cite: 1]."""
     data = request.json
     if not data or 'input_data' not in data:
         return jsonify({"error": "Missing input_data"}), 400
@@ -124,9 +140,10 @@ def recommend_actions():
     try:
         with open("prompts/recommend_template.txt", "r") as f:
             template = f.read()
-        prompt = template.replace("{input_data}", data['input_data'])
         
+        prompt = template.replace("{input_data}", data['input_data'])
         prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()
+
         if prompt_hash in ai_cache:
             return ai_cache[prompt_hash], 200, {'Content-Type': 'application/json', 'X-Cache': 'HIT'}
 
@@ -139,38 +156,11 @@ def recommend_actions():
 
         ai_cache[prompt_hash] = completion.choices[0].message.content
         return ai_cache[prompt_hash], 200, {'Content-Type': 'application/json', 'X-Cache': 'MISS'}
-    except Exception:
-        return jsonify(get_fallback_data("recommend")), 200
 
-@app.route('/generate-report', methods=['POST'])
-@limiter.limit("30 per minute")
-def generate_report():
-    """Day 9: Optimized report generation with zero 500 error guarantee[cite: 1]."""
-    data = request.json
-    if not data or 'input_data' not in data:
-        return jsonify({"error": "Missing input_data"}), 400
-
-    try:
-        with open("prompts/report_template.txt", "r") as f:
-            template = f.read()
-        prompt = template.replace("{input_data}", data['input_data'])
-        
-        prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()
-        if prompt_hash in ai_cache:
-            return ai_cache[prompt_hash], 200, {'Content-Type': 'application/json', 'X-Cache': 'HIT'}
-
-        completion = client.chat.completions.create(
-            model=os.getenv("GROQ_MODEL"),
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.5,
-            response_format={"type": "json_object"}
-        )
-
-        ai_cache[prompt_hash] = completion.choices[0].message.content
-        return ai_cache[prompt_hash], 200, {'Content-Type': 'application/json', 'X-Cache': 'MISS'}
-    except Exception:
-        return jsonify(get_fallback_data("report")), 200
+    except Exception as e:
+        print(f"Cloud AI Error: {e} -> Rerouting to local transformer...")
+        resp = jsonify(get_fallback_data("recommend", data['input_data']))
+        return resp, 200
 
 if __name__ == '__main__':
-    # AI Microservice runs on Port 5000[cite: 1]
     app.run(port=5000)
