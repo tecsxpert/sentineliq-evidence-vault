@@ -1,0 +1,332 @@
+[
+    {
+        "id": 1,
+        "input": "Found a suspicious USB drive on the server rack.",
+        "latency_seconds": 2.44,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A computer that was plugged into a computer was plugged into a computer..",
+            "generated_at": "2026-05-05T17:19:23.993217",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 2,
+        "input": "Water-damaged laptop found near the water exit.",
+        "latency_seconds": 2.38,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A laptop with a water-damaged laptop is being tested for a water-damaged laptop..",
+            "generated_at": "2026-05-05T17:19:27.360907",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 3,
+        "input": "Shattered smartphone recovered from the suspect's vehicle.",
+        "latency_seconds": 2.35,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A man has been arrested on suspicion of stealing a smartphone from a police car..",
+            "generated_at": "2026-05-05T17:19:30.733362",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 4,
+        "input": "Server logs show 500 failed login attempts at 3 AM.",
+        "latency_seconds": 2.28,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The server logs show 500 failed login attempts at 3 am..",
+            "generated_at": "2026-05-05T17:19:34.072136",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 5,
+        "input": "Confidential documents were left unattended near the printer.",
+        "latency_seconds": 2.2,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The printer was unable to access the documents..",
+            "generated_at": "2026-05-05T17:19:37.339403",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 6,
+        "input": "An unauthorized keycard was found dropped in the lobby.",
+        "latency_seconds": 2.32,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The unauthorized keycard was found in the lobby of the new york city public library..",
+            "generated_at": "2026-05-05T17:19:40.554310",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 7,
+        "input": "Unrecognized Raspberry Pi plugged into the main network switch.",
+        "latency_seconds": 2.41,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The raspberry pi is a slew of devices that are plugged into the main network switch..",
+            "generated_at": "2026-05-05T17:19:43.878097",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 8,
+        "input": "Employee reported a phishing email with a PDF attachment.",
+        "latency_seconds": 2.37,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A phishing email was mailed to a customer who reported the email to the employee..",
+            "generated_at": "2026-05-05T17:19:47.284876",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 9,
+        "input": "Hard drive found with severe burn marks in the trash bin.",
+        "latency_seconds": 2.4,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A spokesman for the national institute of health said the spokesman was unable to comment on the case..",
+            "generated_at": "2026-05-05T17:19:50.656921",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 10,
+        "input": "Security camera obscured with black tape outside the IT room.",
+        "latency_seconds": 2.78,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The camera is a sleeveless device that is a sleeveless device that is a sleeveless device that is a sleeveless device that is a.",
+            "generated_at": "2026-05-05T17:19:54.069527",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 11,
+        "input": "Open laptop left unlocked in the public cafeteria.",
+        "latency_seconds": 2.31,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A laptop is being reinstalled in the public cafeteria..",
+            "generated_at": "2026-05-05T17:19:57.836507",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 12,
+        "input": "External hard drive missing from the secure vault.",
+        "latency_seconds": 2.33,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A security alert has been issued to the security of a computer in the uk..",
+            "generated_at": "2026-05-05T17:20:01.159726",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 13,
+        "input": "Post-it note with admin passwords found on a monitor.",
+        "latency_seconds": 2.36,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A report on the security risks of a computer monitor is a scathing report..",
+            "generated_at": "2026-05-05T17:20:04.470364",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 14,
+        "input": "Network traffic spike detected originating from the guest Wi-Fi.",
+        "latency_seconds": 2.38,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The network is a major source of traffic in the country, according to a report..",
+            "generated_at": "2026-05-05T17:20:07.857468",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 15,
+        "input": "Ransomware note displayed on the HR department's main terminal.",
+        "latency_seconds": 2.36,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] Ransomware is a malware that is a threat to the company's reputation..",
+            "generated_at": "2026-05-05T17:20:11.222175",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 16,
+        "input": "Severed ethernet cables found in the secondary server room.",
+        "latency_seconds": 2.75,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The ethernet cables are a smear of a smear of a smear of a smear of a smear of a smear of .",
+            "generated_at": "2026-05-05T17:20:14.589334",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 17,
+        "input": "Employee badge swiped at two different locations simultaneously.",
+        "latency_seconds": 2.74,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The employee badge was a smear of a smear of a smear of a smear of a smear of a smear of a .",
+            "generated_at": "2026-05-05T17:20:18.326475",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 18,
+        "input": "Unknown Bluetooth device broadcasting near the CEO's office.",
+        "latency_seconds": 2.36,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The ceo's office is a shackle in the middle of the city..",
+            "generated_at": "2026-05-05T17:20:22.087394",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 19,
+        "input": "Burner phone found taped under a conference room table.",
+        "latency_seconds": 2.41,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A spokesman for the national security agency said the phone was found in a conference room in the city..",
+            "generated_at": "2026-05-05T17:20:25.447354",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 20,
+        "input": "Firewall logs show outgoing data to a known malicious IP.",
+        "latency_seconds": 2.3,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] Firewall is a malware that is a threat to the internet..",
+            "generated_at": "2026-05-05T17:20:28.855167",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 21,
+        "input": "Unidentified drone crashed on the roof near the HVAC intakes.",
+        "latency_seconds": 2.37,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A drone was spotted on the roof of a building in the city of los angeles..",
+            "generated_at": "2026-05-05T17:20:32.163753",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 22,
+        "input": "USB keylogger found plugged into the CFO's keyboard.",
+        "latency_seconds": 2.53,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A keylogger is plugged into the cfo's keyboard, which is a keylogger that is plugged into the cfo's keyboard..",
+            "generated_at": "2026-05-05T17:20:35.537053",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 23,
+        "input": "Multiple biometric scanner rejections at the main vault.",
+        "latency_seconds": 2.75,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The syringes are a syringe that is a syringe that is a syringe that is a syringe that is a sy.",
+            "generated_at": "2026-05-05T17:20:39.064369",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 24,
+        "input": "Suspicious powder found inside an opened hardware shipment.",
+        "latency_seconds": 2.33,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The shipment was seized on friday, but the shipment was delayed for several days..",
+            "generated_at": "2026-05-05T17:20:42.808326",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 25,
+        "input": "Database backup files found on a personal cloud storage account.",
+        "latency_seconds": 2.46,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A database backup file is a file that is a recurrence of a data breach..",
+            "generated_at": "2026-05-05T17:20:46.183577",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 26,
+        "input": "Smartwatch with recording capabilities left in a classified meeting.",
+        "latency_seconds": 2.31,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The company has been criticized for a lack of a recorder..",
+            "generated_at": "2026-05-05T17:20:49.588269",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 27,
+        "input": "Physical lock on the telecom closet shows signs of picking.",
+        "latency_seconds": 2.43,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] A telecommunications store is a telecommunications store that is a telecommunications store..",
+            "generated_at": "2026-05-05T17:20:52.909679",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 28,
+        "input": "Hidden Wi-Fi network 'Free_Coffee' detected mimicking company SSID.",
+        "latency_seconds": 2.4,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] Ssid is a smuggling company that has been experimenting with the internet for years..",
+            "generated_at": "2026-05-05T17:20:56.328255",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 29,
+        "input": "Discarded uniform found near the restricted loading dock.",
+        "latency_seconds": 2.23,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The uniform was found near the loading dock..",
+            "generated_at": "2026-05-05T17:20:59.742293",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    },
+    {
+        "id": 30,
+        "input": "Large outbound email sent with encrypted ZIP file attached.",
+        "latency_seconds": 2.34,
+        "ai_analysis": {
+            "description": "[OFFLINE MODE] The email is encrypted with a 256-bit encryption protocol..",
+            "generated_at": "2026-05-05T17:21:03.010401",
+            "is_fallback": true,
+            "severity_score": 6
+        }
+    }
+]
