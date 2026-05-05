@@ -11,18 +11,107 @@ The SentinelIQ AI Microservice is a high-performance Flask application that prov
 
 ## 🏗️ Technical Architecture
 - **Language**: Python 3.11
+- **Production Server:** Waitress WSGI
 - **Framework**: Flask 3.x
 - **AI Model**: LLaMA-3.3-70b (via Groq Cloud)
 - **Rate Limiting**: Flask-Limiter (Fixed at 30 req/min)
-- **Caching**: SHA256-based in-memory response caching (Day 7/9 Optimization)[cite: 1]
-- **Security**: OWASP ZAP-compliant headers (CSP, HSTS, X-Frame-Options)[cite: 1]
+- **Offline Fallback AI:** google/flan-t5-small (loaded locally into RAM)
+- **Caching:** Redis (15-minute TTL via SHA256 hashing)
+- **Vector DB:** ChromaDB (for Domain Knowledge RAG)
+- **Security**: OWASP ZAP-compliant headers (CSP, HSTS, X-Frame-Options)
 
-## 🛠️ Installation & Setup
-1. **Directory**: `cd ai-service`
-2. **Virtual Env**: `python -m venv venv`
-3. **Activate**: `.\venv\Scripts\activate` (Windows) or `source venv/bin/activate` (Mac/Linux)
-4. **Dependencies**: `pip install -r requirements.txt`
-5. **Environment Variables**: Create a `.env` file based on `.env.example`:
-   ```env
-   GROQ_API_KEY=your_key_here
-   GROQ_MODEL=llama-3.3-70b-versatile
+## **⚙️ Prerequisites & Setup**
+
+1. Ensure Python 3.11+ is installed.  
+2. Navigate to the ai-service/ directory.  
+3. Install dependencies:  
+   pip install \-r requirements.txt
+
+4. Configure your environment variables.
+
+## **🔐 Environment Variables (.env)**
+
+Create a .env file in the ai-service/ directory with the following variables. **Never commit this file to GitHub.**
+
+GROQ\_API\_KEY=gsk\_your\_api\_key\_here  
+GROQ\_MODEL=llama3-70b-8192  
+REDIS\_HOST=localhost  
+REDIS\_PORT=6379
+
+## **🏃‍♂️ Run Instructions**
+
+To start the production server (Waitress) on port 5000:
+
+python app.py
+
+*Note: The server will take a few seconds to load the offline Hugging Face model into memory before accepting requests. All logs are saved to ai\_service.log.*
+
+## **📡 API Reference**
+
+### **1\. Health Check**
+
+* **Endpoint:** GET /health  
+* **Description:** Returns uptime, active model, and Redis connection status.  
+* **Response:**  
+  {  
+      "status": "healthy",  
+      "uptime\_seconds": 120,  
+      "groq\_model": "llama3-70b-8192",  
+      "redis\_cache": "connected",  
+      "offline\_fallback": "active"  
+  }
+
+### **2\. Describe Evidence**
+
+* **Endpoint:** POST /describe  
+* **Rate Limit:** 30 requests / minute  
+* **Request Body:**  
+  {  
+      "input\_data": "Found a suspicious USB drive on the server rack."  
+  }
+
+* **Success Response (200 OK):**  
+  {  
+      "description": "The USB drive presents a severe risk of malicious payload execution or unauthorized data exfiltration.",  
+      "severity\_score": 5,  
+      "generated\_at": "2026-05-04T12:00:00.000Z",  
+      "is\_fallback": false  
+  }
+
+### **3\. Recommend Actions**
+
+* **Endpoint:** POST /recommend  
+* **Rate Limit:** 30 requests / minute  
+* **Request Body:**  
+  {  
+      "input\_data": "Found a suspicious USB drive on the server rack."  
+  }
+
+* **Success Response (200 OK):**  
+  {  
+      "recommendations": \[  
+          {  
+              "action\_type": "Quarantine",  
+              "description": "Isolate the USB drive in a static-proof bag immediately.",  
+              "priority": "High"  
+          }  
+      \],  
+      "is\_fallback": false  
+  }
+
+### **4\. Generate Report (Maintained by AI Dev 2\)**
+
+* **Endpoint:** POST /generate-report  
+* **Description:** Aggregates data into a structured JSON report.  
+* **Request Body:**  
+  {  
+      "input\_data": "Summary of Week 1 incidents."  
+  }
+
+* **Success Response (200 OK):**  
+  {  
+      "title": "Week 1 Incident Report",  
+      "summary": "Brief overview of the events...",  
+      "key\_items": \["Item 1", "Item 2"\],  
+      "recommendations": \["Recommendation 1"\]  
+  }  
