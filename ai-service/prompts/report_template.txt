@@ -1,9 +1,0 @@
-Generate a comprehensive investigation report for the following evidence:
-Evidence Data: {input_data}
-
-Return a JSON object with exactly these keys:
-- "title": (A professional title for the report)
-- "summary": (A 1-sentence executive summary)
-- "overview": (A detailed background of the evidence)
-- "key_items": (A list of specific technical details identified)
-- "recommendations": (3 prioritized next steps)
