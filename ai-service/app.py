@@ -4,6 +4,7 @@ import hashlib
 import time
 import logging
 import redis # DAY 7: Redis caching
+import chromadb
 from flask import Flask, request, jsonify
 from groq import Groq
 from dotenv import load_dotenv
@@ -12,6 +13,14 @@ from flask_limiter.util import get_remote_address
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from waitress import serve
 
+try:
+    chroma_client = chromadb.PersistentClient(path="./chroma_db")
+    knowledge_collection = chroma_client.get_collection(name="sentineliq_knowledge")
+    logging.info("ChromaDB Vector Store Connected")
+except Exception as e:
+    logging.warning(f"ChromaDB not found. Run seed_db.py first. Error: {e}")
+    knowledge_collection = None
+    
 # Configure Audit Logging
 logging.basicConfig(
     level=logging.INFO,
@@ -25,6 +34,7 @@ logging.basicConfig(
 load_dotenv()
 app = Flask(__name__)
 start_time = time.time()
+request_metrics = {"count": 0, "total_time": 0.0}
 
 # --- DAY 7: REDIS CACHE INITIALIZATION ---
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
@@ -99,18 +109,34 @@ def get_fallback_data(task_type, input_text="No input provided"):
             "recommendations": [{"action_type": "Quarantine", "description": "Isolate the asset.", "priority": "High"}],
             "is_fallback": True
         }
+    
+    if task_type == "report":
+        return {
+            "title": "[OFFLINE MODE] Auto-Generated Incident Report",
+            "summary": "Cloud AI unavailable. Minimal report generated locally.",
+            "overview": f"Evidence submitted for review: {input_text}",
+            "key_items": ["System offline", "Manual analysis required"],
+            "recommendations": ["Restore internet connection to process full executive report."],
+            "is_fallback": True
+        }
+    
     return {"is_fallback": True}
 
 # --- DAY 7: UPDATED HEALTH ENDPOINT ---
 @app.route('/health', methods=['GET'])
 def health_check():
-    """Returns model info, uptime, and cache status."""
     uptime = time.time() - start_time
     redis_status = "connected" if redis_client and redis_client.ping() else "disconnected"
+    
+    # Calculate average safely
+    avg_time = 0
+    if request_metrics["count"] > 0:
+        avg_time = round(request_metrics["total_time"] / request_metrics["count"], 2)
     
     return jsonify({
         "status": "healthy", 
         "uptime_seconds": int(uptime),
+        "avg_response_time_seconds": avg_time, # DAY 7 FIX
         "groq_model": os.getenv("GROQ_MODEL", "llama3-70b-8192"),
         "redis_cache": redis_status,
         "offline_fallback": "active"
@@ -129,8 +155,15 @@ def describe_evidence():
 
         with open("prompts/describe_template.txt", "r") as f:
             template = f.read()
-        
-        prompt = template.replace("{input_data}", data['input_data'])
+        # Fetch relevant domain knowledge from ChromaDB
+        domain_context = ""
+        if knowledge_collection:
+            results = knowledge_collection.query(query_texts=[data['input_data']], n_results=1)
+            if results['documents'] and results['documents'][0]:
+                domain_context = f"\nRelevant Company Policy: {results['documents'][0][0]}"
+
+        # Inject policy into the prompt
+        prompt = template.replace("{input_data}", data['input_data'] + domain_context)
         prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()
 
         # --- DAY 7: REDIS CACHE HIT CHECK ---
@@ -202,6 +235,57 @@ def recommend_actions():
         logging.warning(f"Cloud AI Error: {e} -> Rerouting to local transformer...")
         resp = jsonify(get_fallback_data("recommend", data['input_data']))
         return resp, 200
+
+# --- DAY 6: GENERATE REPORT ENDPOINT ---
+@app.route('/generate-report', methods=['POST'])
+@limiter.limit("30 per minute")
+def generate_report():
+    data = request.json
+    if not data or 'input_data' not in data:
+        return jsonify({"error": "Missing input_data"}), 400
+
+    try:
+        load_dotenv(override=True) 
+        client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+        
+        # Try to load from file, otherwise use a strict fallback prompt
+        try:
+            with open("prompts/generate_report_template.txt", "r") as f:
+                template = f.read()
+        except FileNotFoundError:
+            template = """Analyze the following security incidents and generate a comprehensive executive report in JSON format.
+            The JSON must contain exactly these keys: 'title' (string), 'summary' (string), 'overview' (string), 'key_items' (array of strings), and 'recommendations' (array of strings).
+            
+            Incident Data: {input_data}"""
+        
+        prompt = template.replace("{input_data}", data['input_data'])
+        prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()
+
+        if redis_client:
+            cached_data = redis_client.get(prompt_hash)
+            if cached_data:
+                logging.info("Redis Cache HIT for /generate-report")
+                return cached_data, 200, {'Content-Type': 'application/json', 'X-Cache': 'HIT'}
+
+        completion = client.chat.completions.create(
+            model=os.getenv("GROQ_MODEL"),
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.4, # Slightly lower temperature for formal report writing
+            response_format={"type": "json_object"}
+        )
+        response_text = completion.choices[0].message.content
+
+        if redis_client:
+            redis_client.setex(name=prompt_hash, time=900, value=response_text)
+            logging.info("Redis Cache MISS - Data saved to Redis with 15m TTL")
+
+        return response_text, 200, {'Content-Type': 'application/json', 'X-Cache': 'MISS'}
+
+    except Exception as e:
+        logging.warning(f"Cloud AI Error: {e} -> Rerouting to local transformer...")
+        resp = jsonify(get_fallback_data("report", data['input_data']))
+        return resp, 200
+
 
 if __name__ == '__main__':
     logging.info("Starting SentinelIQ AI Microservice on Production Server (Port 5000)...")

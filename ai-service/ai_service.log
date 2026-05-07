@@ -242,3 +242,20 @@
 2026-05-07 19:57:30,222 - [INFO] - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 401 Unauthorized"
 2026-05-07 19:57:30,223 - [WARNING] - Cloud AI Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}} -> Rerouting to local transformer...
 2026-05-07 19:58:27,513 - [INFO] - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-07 21:43:32,040 - [WARNING] - Redis connection failed. Running without cache. Error: Error 10061 connecting to localhost:6379. No connection could be made because the target machine actively refused it.
+2026-05-07 21:43:32,040 - [INFO] - Loading instruction-tuned offline model (FLAN-T5)... Please wait.
+2026-05-07 21:43:32,823 - [INFO] - HTTP Request: HEAD https://huggingface.co/google/flan-t5-small/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-07 21:43:32,833 - [INFO] - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/google/flan-t5-small/0fc9ddf78a1e988dac52e2dac162b0ede4fd74ab/config.json "HTTP/1.1 200 OK"
+2026-05-07 21:43:33,113 - [INFO] - HTTP Request: HEAD https://huggingface.co/google/flan-t5-small/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-07 21:43:33,113 - [WARNING] - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-05-07 21:43:33,389 - [INFO] - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/google/flan-t5-small/0fc9ddf78a1e988dac52e2dac162b0ede4fd74ab/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-07 21:43:34,242 - [INFO] - HTTP Request: GET https://huggingface.co/api/models/google/flan-t5-small/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-07 21:43:34,539 - [INFO] - HTTP Request: GET https://huggingface.co/api/models/google/flan-t5-small/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-07 21:43:35,141 - [INFO] - HTTP Request: HEAD https://huggingface.co/google/flan-t5-small/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-07 21:43:35,155 - [INFO] - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/google/flan-t5-small/0fc9ddf78a1e988dac52e2dac162b0ede4fd74ab/config.json "HTTP/1.1 200 OK"
+2026-05-07 21:43:36,309 - [INFO] - HTTP Request: HEAD https://huggingface.co/google/flan-t5-small/resolve/main/generation_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-07 21:43:36,317 - [INFO] - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/google/flan-t5-small/0fc9ddf78a1e988dac52e2dac162b0ede4fd74ab/generation_config.json "HTTP/1.1 200 OK"
+2026-05-07 21:43:36,323 - [INFO] - Offline model ready!
+2026-05-07 21:43:36,684 - [INFO] - Starting SentinelIQ AI Microservice on Production Server (Port 5000)...
+2026-05-07 21:43:36,687 - [INFO] - Serving on http://0.0.0.0:5000
+2026-05-07 21:54:32,158 - [INFO] - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
