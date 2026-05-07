@@ -71,11 +71,20 @@ def get_fallback_data(task_type, input_text="No input provided"):
     now = datetime.datetime.now().isoformat()
     try:
         if task_type == "describe":
-            local_prompt = f"Briefly explain the security risk of this evidence: {input_text}"
+            local_prompt = f"Explain the severe security consequences and potential data breach risks of this evidence: {input_text}"
+            
             inputs = tokenizer(local_prompt, return_tensors="pt")
-            outputs = local_fallback_model.generate(**inputs, max_length=50)
+            
+            # Increase max_length and add generation parameters for better text
+            outputs = local_fallback_model.generate(
+                **inputs, 
+                max_length=150, 
+                min_length=30,
+                num_beams=4,
+                early_stopping=True
+            )
             clean_output = tokenizer.decode(outputs[0], skip_special_tokens=True).capitalize()
-                
+
             return {
                 "description": f"[OFFLINE MODE] {clean_output}.",
                 "severity_score": 6, 
@@ -115,6 +124,9 @@ def describe_evidence():
         return jsonify({"error": "Missing input_data"}), 400
 
     try:
+        load_dotenv(override=True) # Forces Python to re-read the .env file live
+        client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
         with open("prompts/describe_template.txt", "r") as f:
             template = f.read()
         
@@ -158,6 +170,8 @@ def recommend_actions():
         return jsonify({"error": "Missing input_data"}), 400
 
     try:
+        load_dotenv(override=True) # Forces Python to re-read the .env file live
+        client = Groq(api_key=os.getenv("GROQ_API_KEY"))
         with open("prompts/recommend_template.txt", "r") as f:
             template = f.read()
         
